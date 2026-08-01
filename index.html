@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Vault — Self-Verified Strategy Ledger</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/icon-192.png">
+<meta name="theme-color" content="#10141C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Vault">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #10141C; --card: #1A2029; --border: #2A323F; --text: #E8E6DF; --muted: #8B8F98;
+    --verified: #4FA97C; --verified-bg: rgba(79,169,124,0.12);
+    --caution: #D9A441; --caution-bg: rgba(217,164,65,0.12);
+    --flag: #C4554D; --flag-bg: rgba(196,85,77,0.12);
+    --tested: #6E9BC7; --tested-bg: rgba(110,155,199,0.12);
+    --tag-universe: #B98BC9; --tag-universe-bg: rgba(185,139,201,0.14);
+    --tag-source: #5FB0A8; --tag-source-bg: rgba(95,176,168,0.14);
+    --ink: #0B0E13;
+  }
+  body[data-theme="light"] {
+    --bg: #F7F5F0; --card: #FFFFFF; --border: #E4E0D6; --text: #2A2620; --muted: #837C6E;
+    --ink: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.2s ease, color 0.2s ease; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 40px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); font-size: 15.5px; line-height: 1.6; max-width: 620px; }
+
+  .theme-toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 8px 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    cursor: pointer; flex-shrink: 0; margin-top: 4px;
+  }
+  .theme-toggle .dot { width: 20px; height: 20px; border-radius: 50%; background: var(--tested); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+
+  .honesty-strip {
+    margin: 22px 0 30px;
+    padding: 12px 16px;
+    background: var(--verified-bg);
+    border: 1px solid var(--verified);
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .honesty-strip b { color: var(--verified); }
+
+  .summary-bar { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 0 0 30px; flex-wrap: wrap; }
+  .summary-cell { flex: 1; min-width: 130px; background: var(--card); padding: 16px 18px; }
+  .summary-num { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; }
+  .summary-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .summary-cell.v .summary-num { color: var(--verified); }
+  .summary-cell.c .summary-num { color: var(--caution); }
+  .summary-cell.f .summary-num { color: var(--flag); }
+  .summary-cell.t .summary-num { color: var(--tested); }
+
+  .search-sort-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .search-box { flex: 1; min-width: 200px; font-family: 'Inter', sans-serif; font-size: 13.5px; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 9px 14px; border-radius: 8px; }
+  .search-box::placeholder { color: var(--muted); }
+  .search-box:focus { outline: none; border-color: var(--tested); }
+  .sort-select { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 9px 12px; border-radius: 8px; }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-chip { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.03em; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; transition: all 0.15s ease; }
+  .filter-chip:hover { border-color: var(--tested); color: var(--text); }
+  .filter-chip.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+
+  .display-toggle { display: flex; gap: 2px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+  .display-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; background: transparent; color: var(--muted); cursor: pointer; }
+  .display-btn.active { background: var(--border); color: var(--text); }
+
+  .section-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 44px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .grid.list-mode { grid-template-columns: 1fr; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; position: relative; animation: cardIn 0.3s ease backwards; }
+  .card:hover { border-color: var(--tested); }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .list-mode .card { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .list-mode .card-main { flex: 1; min-width: 240px; }
+  .list-mode .card-side { flex-shrink: 0; min-width: 140px; }
+
+  .stamp { position: absolute; top: 18px; right: 18px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 4px; transform: rotate(3deg); text-transform: uppercase; border: 1px solid currentColor; white-space: nowrap; }
+  .stamp.verified { color: var(--verified); background: var(--verified-bg); }
+  .stamp.caution { color: var(--caution); background: var(--caution-bg); transform: rotate(-2deg); }
+  .stamp.flag { color: var(--flag); background: var(--flag-bg); transform: rotate(2deg); }
+  .stamp.tested { color: var(--tested); background: var(--tested-bg); transform: rotate(-1.5deg); }
+
+  .card-category { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--tested); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .card-source { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .card-title { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; line-height: 1.25; margin: 0 0 10px; padding-right: 90px; }
+  .card-mech { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
+
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 9px; border-radius: 5px; font-weight: 600; letter-spacing: 0.02em; }
+  .tag.universe { color: var(--tag-universe); background: var(--tag-universe-bg); }
+  .tag.source { color: var(--tag-source); background: var(--tag-source-bg); }
+
+  .capital-line { font-size: 11.5px; color: var(--muted); margin-bottom: 14px; padding: 8px 10px; background: var(--bg); border-radius: 6px; border: 1px dashed var(--border); }
+  .capital-line b { color: var(--verified); font-family: 'JetBrains Mono', monospace; }
+
+  .card-stats { display: flex; gap: 18px; padding-top: 12px; border-top: 1px solid var(--border); margin-bottom: 14px; }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+  .cta-row { display: flex; gap: 8px; }
+  .cta-primary, .cta-secondary { flex: 1; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; padding: 10px 12px; border-radius: 8px; cursor: pointer; text-align: center; }
+  .cta-primary { background: var(--verified); color: var(--ink); border: none; }
+  .cta-primary:hover { opacity: 0.9; }
+  .cta-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .cta-secondary:hover { border-color: var(--tested); }
+
+  .detail { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.65; color: var(--text); }
+  .card.open .detail { display: block; }
+
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 28px; }
+  .page-btn { font-family: 'JetBrains Mono', monospace; font-size: 12px; min-width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; }
+  .page-btn.active { background: var(--tested); color: var(--ink); border-color: var(--tested); font-weight: 700; }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .page-size-select { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 6px 10px; border-radius: 6px; margin-left: 12px; }
+
+  .empty-state { grid-column: 1 / -1; text-align: center; padding: 48px 24px; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); }
+  .empty-state .em-title { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+  .empty-state button { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 20px; cursor: pointer; margin-top: 14px; }
+
+  .log-form { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.6fr auto; gap: 10px; margin-bottom: 20px; }
+  .log-form input { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; }
+  .log-form button { background: var(--verified); color: var(--ink); border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .log-table { width: 100%; border-collapse: collapse; }
+  .log-table th { text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .log-table td { padding: 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .log-empty { color: var(--muted); font-size: 13px; padding: 28px 12px; text-align: center; border: 1px dashed var(--border); border-radius: 10px; }
+  .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .del-btn:hover { color: var(--flag); }
+
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+  .genie-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+  .genie-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .genie-field { flex: 1; min-width: 180px; }
+  .genie-field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+  .genie-field input, .genie-field select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 9px 12px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; }
+  .genie-params { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 14px; margin-bottom: 14px; }
+  .genie-caveat { margin-top: 14px; padding: 10px 14px; background: var(--caution-bg); border: 1px solid var(--caution); border-radius: 8px; font-size: 12px; color: var(--text); }
+  .genie-output-header { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+  #genieCode { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; overflow-x: auto; max-height: 420px; overflow-y: auto; color: var(--text); white-space: pre; }
+
+  @media (max-width: 640px) {
+    .summary-bar { flex-direction: column; }
+    .log-form { grid-template-columns: 1fr; }
+    h1 { font-size: 30px; }
+    .toolbar { flex-direction: column; align-items: flex-start; }
+    .top-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body data-theme="dark">
+<div class="wrap">
+
+  <div class="top-row">
+    <header>
+      <div class="eyebrow">Personal Ledger — Not For Sale, Not A Product</div>
+      <h1>The Vault</h1>
+      <p class="lede">A catalogue of the strategies we've actually pulled apart, with the credibility label earned by our own checking — not the seller's.</p>
+    </header>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeLabel">Dark</span>
+      <span class="dot" id="themeDot">🌙</span>
+    </div>
+  </div>
+
+  <div class="honesty-strip">
+    <span><b>No minimum capital anywhere on this page.</b> Every card is paper-tracking only — nothing here connects to a broker or risks real money.</span>
+  </div>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <div class="search-sort-row">
+    <input type="text" class="search-box" id="searchBox" placeholder="Search strategies by name or mechanism…" oninput="setSearch(this.value)">
+    <select class="sort-select" id="sortSelect" onchange="setSort(this.value)">
+      <option value="default">Sort: Default order</option>
+      <option value="title">Sort: Name A–Z</option>
+      <option value="credibility">Sort: Credibility (verified first)</option>
+    </select>
+  </div>
+
+  <div class="toolbar">
+    <div class="filter-group" id="filterGroup"></div>
+    <div style="display:flex; align-items:center;">
+      <div class="display-toggle">
+        <button class="display-btn active" id="btnGrid" onclick="setDisplay('grid')">Grid</button>
+        <button class="display-btn" id="btnList" onclick="setDisplay('list')">List</button>
+      </div>
+      <select class="page-size-select" id="pageSizeSelect" onchange="setPageSize(this.value)">
+        <option value="3">3 / page</option>
+        <option value="6" selected>6 / page</option>
+        <option value="12">12 / page</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid" id="cardGrid"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <div class="section-title">Genie — Strategy Script Generator</div>
+  <p class="lede" style="margin-bottom:18px;">Describe a strategy the same way BullsAI's own prompt library does — pick a family, set the parameters — and get back a real, runnable Python backtest against actual Nifty 50 data with a benchmark comparison. Not a black box: you can read every line before you run it.</p>
+
+  <div class="genie-box">
+    <div class="genie-row">
+      <div class="genie-field">
+        <label>Strategy family</label>
+        <select id="genieFamily" onchange="renderGenieParams()"></select>
+      </div>
+    </div>
+    <div class="genie-params" id="genieParams"></div>
+    <div class="genie-row">
+      <div class="genie-field">
+        <label>Optional stop-loss %</label>
+        <input type="number" id="genieStop" step="0.1" placeholder="e.g. 1.5 (leave blank to skip)">
+      </div>
+      <div class="genie-field">
+        <label>Optional target %</label>
+        <input type="number" id="genieTarget" step="0.1" placeholder="e.g. 3 (leave blank to skip)">
+      </div>
+    </div>
+    <button class="cta-primary" style="width:auto; padding:10px 22px;" onclick="generateGenieScript()">Generate backtest script</button>
+    <div id="genieCaveat" class="genie-caveat" style="display:none;"></div>
+    <div id="genieOutput" style="display:none;">
+      <div class="genie-output-header">
+        <span>backtest_generated.py</span>
+        <div>
+          <button class="cta-secondary" style="padding:6px 12px; font-size:11px;" onclick="copyGenieScript()">Copy</button>
+          <button class="cta-secondary" style="padding:6px 12px; font-size:11px;" onclick="downloadGenieScript()">Download .py</button>
+        </div>
+      </div>
+      <pre id="genieCode"></pre>
+    </div>
+  </div>
+
+  <div class="section-title">Paper Trade Log</div>
+  <div class="log-form">
+    <input id="logStrategy" placeholder="Strategy (e.g. Nifty50 Rebalance)">
+    <input id="logDate" type="date">
+    <input id="logPrice" type="number" step="0.01" placeholder="Entry price">
+    <input id="logNote" placeholder="Notes / signal reason">
+    <button onclick="addEntry()">Log entry</button>
+  </div>
+  <div id="logBody"></div>
+
+  <footer>
+    Verification status reflects our own checking — chartink logic confirmed live, index-rebalance and FII trade logs checked against dated real events, Alpha+ screener flagged for hindsight stock selection, breakout scanner independently backtested against real Nifty 50 data (5.2% CAGR / -53.5% max drawdown / 0.46 Sharpe vs. 10.0% benchmark CAGR — underperformed). Nothing here is investment advice. Paper trade log is stored privately in your browser only.
+  </footer>
+
+</div>
+
+<script>
+const strategies = [
+  {
+    stamp: 'verified', stampLabel: 'Self-Verified', category: 'Index Events',
+    universe: 'Nifty 50', sourceType: 'Point-in-Time Events',
+    source: 'NSE index rebalance events', title: 'Nifty50 Rebalance Strategy',
+    mech: 'Buy the stock added to the Nifty 50 on each semi-annual rebalance (Mar/Sep), hold 1 year, sell.',
+    stats: [['29.5%','Avg return'], ['73%','Win rate'], ['15','Trades']],
+    detail: 'Checked directly: individual dated trades (Oct 2020–Sep 2025) tied to real, publicly verifiable index-inclusion events — not reconstructed with hindsight. Nifty comparison shown for the same window (12.57%). Small sample size (15 trades) is the main limitation; no cost/tax modeling included. Not yet independently re-backtested by us the way the breakout scanner was.'
+  },
+  {
+    stamp: 'verified', stampLabel: 'Self-Verified', category: 'Institutional Flow',
+    universe: 'Midcap 100', sourceType: 'Trade Log',
+    source: 'Trendlyne FII holding screener', title: 'FII Build-Up Strategy',
+    mech: 'Buy midcap stocks where FII holding jumped 3%+ in a quarter, hold exactly 3 months, exit.',
+    stats: [['21.9%','Annualized'], ['48','Trades logged'], ['2.5yr','History']],
+    detail: 'Checked directly: 48 individually dated trades (Mar 2023–Sep 2025) with real buy/sell prices, including genuine losses (down to -28%) — not a cherry-picked winners list. Still no benchmark line or cost modeling in the source file, and not yet independently re-backtested by us.'
+  },
+  {
+    stamp: 'tested', stampLabel: 'Tested — Underperformed', category: 'Technical Breakout',
+    universe: 'Nifty 50', sourceType: 'Live Scanner',
+    source: 'Independently backtested, Aug 2026', title: 'Breakout + Volume + RSI Scanner',
+    mech: '6-month price breakout + 2x average volume + RSI < 70, on Nifty 50. Hold 5 days, sell.',
+    stats: [['5.2%','CAGR (real)'], ['-53.5%','Max drawdown'], ['0.46','Sharpe']],
+    detail: 'We ran this ourselves against 8 years of real Nifty 50 price data (194 trades, 51% win rate) — the scanner logic is real and reproducible on chartink, but on a full honest test it underperformed simply holding the Nifty 50 (10.0% CAGR) while carrying far more drawdown risk than the 32.9%/-15%/1.97-Sharpe figures shown in the original live demo. This is the one strategy on this page with a complete, independent test behind it — and it did not hold up.'
+  },
+  {
+    stamp: 'caution', stampLabel: 'Internally Consistent, Unresolved', category: 'Screener-Based',
+    universe: 'Custom List', sourceType: 'Provided Backtest',
+    source: 'Superstar Investors CSV (course-provided)', title: '"Superstar Investors" Equal-Weight Backtest',
+    mech: '~200 stocks associated with tracked institutional/investor holdings, equal-weighted, rebalanced annually, 2013–2026.',
+    stats: [['25.9%','CAGR (our calc)'], ['13yr','Period'], ['~15%','Nifty500 benchmark']],
+    detail: 'We recomputed the year-by-year averages ourselves and they matched the file exactly — the arithmetic is genuine. Unresolved: whether the ~200-stock list for each year was actually known at that point in time, or built using today\'s holdings and applied backward (look-ahead bias). No cost/tax modeling, no benchmark line included in the source.'
+  },
+  {
+    stamp: 'flag', stampLabel: 'Red Flag', category: 'Screener-Based',
+    universe: 'Custom List', sourceType: 'Vendor Claim',
+    source: 'SpringPad Alpha+ Investing Screener', title: 'Alpha+ Top-10-by-Market-Cap Screener',
+    mech: 'Take the top 10 stocks by market cap from the screener as of year-end, show their trailing 1-year return.',
+    stats: [['33–64%','Claimed avg return'], ['2','Data points'], ['0','Benchmark years']],
+    detail: 'This is textbook hindsight selection: picking which stocks to feature *after* seeing they grew large enough to rank top-10, then presenting their past return as a forward strategy. Only 2 years of data. Treat this specific figure as promotional, not evidential.'
+  }
+];
+
+let activeCategory = 'All', displayMode = 'grid', pageSize = 6, currentPage = 1, searchTerm = '', sortMode = 'default';
+const credibilityRank = { verified: 0, tested: 1, caution: 2, flag: 3 };
+const categories = ['All', ...new Set(strategies.map(s => s.category))];
+
+function toggleTheme() {
+  const body = document.body;
+  const isDark = body.getAttribute('data-theme') === 'dark';
+  body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+  document.getElementById('themeDot').textContent = isDark ? '☀️' : '🌙';
+}
+
+function renderSummary() {
+  const counts = { verified: 0, caution: 0, flag: 0, tested: 0 };
+  strategies.forEach(s => counts[s.stamp]++);
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-cell v"><div class="summary-num">${counts.verified}</div><div class="summary-label">Self-verified</div></div>
+    <div class="summary-cell t"><div class="summary-num">${counts.tested}</div><div class="summary-label">Independently tested</div></div>
+    <div class="summary-cell c"><div class="summary-num">${counts.caution}</div><div class="summary-label">Unresolved</div></div>
+    <div class="summary-cell f"><div class="summary-num">${counts.flag}</div><div class="summary-label">Red flag</div></div>
+  `;
+}
+function renderFilters() {
+  document.getElementById('filterGroup').innerHTML = categories.map(cat =>
+    `<button class="filter-chip ${cat === activeCategory ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
+  ).join('');
+}
+function setCategory(cat) { activeCategory = cat; currentPage = 1; renderFilters(); renderCards(); }
+function setDisplay(mode) {
+  displayMode = mode;
+  document.getElementById('btnGrid').classList.toggle('active', mode === 'grid');
+  document.getElementById('btnList').classList.toggle('active', mode === 'list');
+  renderCards();
+}
+function setPageSize(val) { pageSize = parseInt(val); currentPage = 1; renderCards(); }
+function goToPage(p) { currentPage = p; renderCards(); }
+function setSearch(val) { searchTerm = val.trim().toLowerCase(); currentPage = 1; renderCards(); }
+function setSort(val) { sortMode = val; currentPage = 1; renderCards(); }
+function clearFilters() {
+  activeCategory = 'All'; searchTerm = ''; sortMode = 'default'; currentPage = 1;
+  document.getElementById('searchBox').value = ''; document.getElementById('sortSelect').value = 'default';
+  renderFilters(); renderCards();
+}
+function matchesSearch(s) {
+  if (!searchTerm) return true;
+  return s.title.toLowerCase().includes(searchTerm) || s.mech.toLowerCase().includes(searchTerm) || s.category.toLowerCase().includes(searchTerm);
+}
+function logFromCard(title) {
+  document.getElementById('logStrategy').value = title;
+  document.getElementById('logStrategy').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('logStrategy').focus();
+}
+
+function renderCards() {
+  let filtered = strategies.filter(s => (activeCategory === 'All' || s.category === activeCategory) && matchesSearch(s));
+  if (sortMode === 'title') filtered = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+  else if (sortMode === 'credibility') filtered = [...filtered].sort((a, b) => credibilityRank[a.stamp] - credibilityRank[b.stamp]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  currentPage = Math.min(currentPage, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const grid = document.getElementById('cardGrid');
+  grid.className = 'grid' + (displayMode === 'list' ? ' list-mode' : '');
+  grid.innerHTML = '';
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="em-title">No strategies match that</div><div>Try a different search term or clear the category filter.</div><button onclick="clearFilters()">Clear filters</button></div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  pageItems.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = (i * 0.04) + 's';
+    card.innerHTML = `
+      <div class="card-main">
+        <div class="stamp ${s.stamp}">${s.stampLabel}</div>
+        <div class="card-category">${s.category}</div>
+        <div class="card-source">${s.source}</div>
+        <h3 class="card-title">${s.title}</h3>
+        <div class="card-mech">${s.mech}</div>
+        <div class="tag-row">
+          <span class="tag universe">${s.universe}</span>
+          <span class="tag source">${s.sourceType}</span>
+        </div>
+        <div class="capital-line">Min capital required: <b>₹0 — paper only</b></div>
+        <div class="card-stats">
+          ${s.stats.map(([n,l]) => `<div><div class="stat-num">${n}</div><div class="stat-label">${l}</div></div>`).join('')}
+        </div>
+        <div class="cta-row">
+          <button class="cta-primary" data-title="${s.title.replace(/"/g,'&quot;')}">Log Paper Trade</button>
+          <button class="cta-secondary" data-toggle="1">View Notes</button>
+        </div>
+        <div class="detail">${s.detail}</div>
+      </div>
+    `;
+    card.querySelector('.cta-primary').addEventListener('click', e => { e.stopPropagation(); logFromCard(s.title); });
+    card.querySelector('.cta-secondary').addEventListener('click', e => { e.stopPropagation(); card.classList.toggle('open'); });
+    grid.appendChild(card);
+  });
+
+  const pag = document.getElementById('pagination');
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+  let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">‹</button>`;
+  for (let i = 1; i <= totalPages; i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+  html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">›</button>`;
+  pag.innerHTML = html;
+}
+
+let entries = [];
+async function loadEntries() {
+  try { const res = await window.storage.get('vault-log-entries', false); entries = res ? JSON.parse(res.value) : []; }
+  catch (e) { entries = []; }
+  renderLog();
+}
+async function saveEntries() {
+  try { await window.storage.set('vault-log-entries', JSON.stringify(entries), false); } catch (e) {}
+}
+function renderLog() {
+  const body = document.getElementById('logBody');
+  if (entries.length === 0) { body.innerHTML = '<div class="log-empty">No entries yet. Log a paper trade above to start tracking.</div>'; return; }
+  body.innerHTML = `<table class="log-table"><thead><tr><th>Strategy</th><th>Date</th><th>Entry</th><th>Notes</th><th></th></tr></thead><tbody>
+    ${entries.map((e, i) => `<tr><td>${e.strategy}</td><td>${e.date || '—'}</td><td>${e.price ? '₹' + e.price : '—'}</td><td>${e.note || '—'}</td><td><button class="del-btn" onclick="deleteEntry(${i})">remove</button></td></tr>`).join('')}
+  </tbody></table>`;
+}
+async function addEntry() {
+  const strategy = document.getElementById('logStrategy').value.trim();
+  const date = document.getElementById('logDate').value;
+  const price = document.getElementById('logPrice').value;
+  const note = document.getElementById('logNote').value.trim();
+  if (!strategy) return;
+  entries.unshift({ strategy, date, price, note });
+  await saveEntries(); renderLog();
+  document.getElementById('logStrategy').value = ''; document.getElementById('logPrice').value = ''; document.getElementById('logNote').value = '';
+}
+async function deleteEntry(i) { entries.splice(i, 1); await saveEntries(); renderLog(); }
+
+renderSummary(); renderFilters(); renderCards(); loadEntries();
+
+// ============================================================
+// Genie — Strategy Script Generator
+// ============================================================
+const GENIE_TEMPLATES = {
+  ema_cross: {
+    label: 'EMA Crossover',
+    params: [{k:'fast', l:'Fast EMA period', d:12}, {k:'slow', l:'Slow EMA period', d:20}],
+    indicator: p => `    df["ema_fast"] = df["Close"].ewm(span=${p.fast}, adjust=False).mean()\n    df["ema_slow"] = df["Close"].ewm(span=${p.slow}, adjust=False).mean()`,
+    entry: `(df["ema_fast"] > df["ema_slow"]) & (df["ema_fast"].shift(1) <= df["ema_slow"].shift(1))`,
+    exit: `(df["ema_fast"] < df["ema_slow"]) & (df["ema_fast"].shift(1) >= df["ema_slow"].shift(1))`
+  },
+  ema_rsi: {
+    label: 'EMA + RSI Filter',
+    params: [{k:'fast', l:'Fast EMA period', d:20}, {k:'slow', l:'Slow EMA period', d:50}, {k:'rsiPeriod', l:'RSI period', d:14}, {k:'rsiLevel', l:'RSI must be above', d:55}],
+    indicator: p => `    df["ema_fast"] = df["Close"].ewm(span=${p.fast}, adjust=False).mean()\n    df["ema_slow"] = df["Close"].ewm(span=${p.slow}, adjust=False).mean()\n    df["rsi"] = compute_rsi(df["Close"], ${p.rsiPeriod})`,
+    entry: p => `(df["ema_fast"] > df["ema_slow"]) & (df["ema_fast"].shift(1) <= df["ema_slow"].shift(1)) & (df["rsi"] > ${p.rsiLevel})`,
+    exit: `(df["ema_fast"] < df["ema_slow"]) & (df["ema_fast"].shift(1) >= df["ema_slow"].shift(1))`
+  },
+  macd_cross: {
+    label: 'MACD Crossover',
+    params: [{k:'fast', l:'MACD fast EMA', d:12}, {k:'slow', l:'MACD slow EMA', d:26}, {k:'signal', l:'Signal period', d:9}],
+    indicator: p => `    ema_f = df["Close"].ewm(span=${p.fast}, adjust=False).mean()\n    ema_s = df["Close"].ewm(span=${p.slow}, adjust=False).mean()\n    df["macd"] = ema_f - ema_s\n    df["macd_signal"] = df["macd"].ewm(span=${p.signal}, adjust=False).mean()`,
+    entry: `(df["macd"] > df["macd_signal"]) & (df["macd"].shift(1) <= df["macd_signal"].shift(1))`,
+    exit: `(df["macd"] < df["macd_signal"]) & (df["macd"].shift(1) >= df["macd_signal"].shift(1))`
+  },
+  macd_rsi: {
+    label: 'MACD + RSI Filter',
+    params: [{k:'fast', l:'MACD fast EMA', d:12}, {k:'slow', l:'MACD slow EMA', d:26}, {k:'signal', l:'Signal period', d:9}, {k:'rsiPeriod', l:'RSI period', d:14}, {k:'rsiLevel', l:'RSI must cross above', d:40}],
+    indicator: p => `    ema_f = df["Close"].ewm(span=${p.fast}, adjust=False).mean()\n    ema_s = df["Close"].ewm(span=${p.slow}, adjust=False).mean()\n    df["macd"] = ema_f - ema_s\n    df["macd_signal"] = df["macd"].ewm(span=${p.signal}, adjust=False).mean()\n    df["rsi"] = compute_rsi(df["Close"], ${p.rsiPeriod})`,
+    entry: p => `(df["rsi"] > ${p.rsiLevel}) & (df["rsi"].shift(1) <= ${p.rsiLevel}) & (df["macd"] > df["macd_signal"])`,
+    exit: `(df["macd"] < df["macd_signal"]) & (df["macd"].shift(1) >= df["macd_signal"].shift(1))`
+  },
+  bollinger: {
+    label: 'Bollinger Band Breakout',
+    params: [{k:'period', l:'BB period', d:20}, {k:'std', l:'Std deviations', d:2}],
+    indicator: p => `    mid = df["Close"].rolling(${p.period}).mean()\n    sd = df["Close"].rolling(${p.period}).std()\n    df["bb_upper"] = mid + ${p.std} * sd\n    df["bb_mid"] = mid`,
+    entry: `(df["Close"] > df["bb_upper"]) & (df["Close"].shift(1) <= df["bb_upper"].shift(1))`,
+    exit: `(df["Close"] < df["bb_mid"])`
+  },
+  atr: {
+    label: 'ATR Threshold Breakout',
+    params: [{k:'period', l:'ATR period', d:14}, {k:'level', l:'ATR must exceed', d:1.5}],
+    indicator: p => `    hl = df["High"] - df["Low"]\n    hc = (df["High"] - df["Close"].shift(1)).abs()\n    lc = (df["Low"] - df["Close"].shift(1)).abs()\n    tr = pd.concat([hl, hc, lc], axis=1).max(axis=1)\n    df["atr"] = tr.rolling(${p.period}).mean()`,
+    entry: p => `(df["atr"] > ${p.level}) & (df["atr"].shift(1) <= ${p.level})`,
+    exit: `pd.Series(False, index=df.index)  # ATR strategy relies on stop-loss/target below, not a signal exit`
+  },
+  stochastic: {
+    label: 'Stochastic Crossover',
+    params: [{k:'fastK', l:'Fast %K period', d:9}, {k:'slowK', l:'Slow %K smoothing', d:3}, {k:'slowD', l:'Slow %D smoothing', d:3}],
+    indicator: p => `    low_min = df["Low"].rolling(${p.fastK}).min()\n    high_max = df["High"].rolling(${p.fastK}).max()\n    fast_k = 100 * (df["Close"] - low_min) / (high_max - low_min)\n    df["stoch_k"] = fast_k.rolling(${p.slowK}).mean()\n    df["stoch_d"] = df["stoch_k"].rolling(${p.slowD}).mean()`,
+    entry: `(df["stoch_k"] > df["stoch_d"]) & (df["stoch_k"].shift(1) <= df["stoch_d"].shift(1))`,
+    exit: `(df["stoch_k"] < df["stoch_d"]) & (df["stoch_k"].shift(1) >= df["stoch_d"].shift(1))`
+  },
+  vwap: {
+    label: 'VWAP Cross (daily approximation)',
+    params: [],
+    indicator: p => `    typical = (df["High"] + df["Low"] + df["Close"]) / 3\n    df["vwap"] = (typical * df["Volume"]).cumsum() / df["Volume"].cumsum()  # anchored from start of data -- approximation, see caveat`,
+    entry: `(df["Close"] > df["vwap"]) & (df["Close"].shift(1) <= df["vwap"].shift(1))`,
+    exit: `(df["Close"] < df["vwap"]) & (df["Close"].shift(1) >= df["vwap"].shift(1))`
+  },
+  aroon: {
+    label: 'Aroon Crossover',
+    params: [{k:'period', l:'Aroon period', d:14}],
+    indicator: p => `    period = ${p.period}\n    df["aroon_up"] = df["High"].rolling(period+1).apply(lambda x: float(np.argmax(x)) / period * 100, raw=True)\n    df["aroon_down"] = df["Low"].rolling(period+1).apply(lambda x: float(np.argmin(x)) / period * 100, raw=True)`,
+    entry: `(df["aroon_up"] > df["aroon_down"]) & (df["aroon_up"].shift(1) <= df["aroon_down"].shift(1))`,
+    exit: `(df["aroon_up"] < df["aroon_down"]) & (df["aroon_up"].shift(1) >= df["aroon_down"].shift(1))`
+  }
+};
+
+function initGenieFamilySelect() {
+  const sel = document.getElementById('genieFamily');
+  sel.innerHTML = Object.entries(GENIE_TEMPLATES).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('');
+  renderGenieParams();
+}
+function renderGenieParams() {
+  const family = document.getElementById('genieFamily').value;
+  const tpl = GENIE_TEMPLATES[family];
+  const box = document.getElementById('genieParams');
+  if (tpl.params.length === 0) {
+    box.innerHTML = '<div style="color:var(--muted); font-size:12.5px; align-self:center;">No parameters needed for this family.</div>';
+    return;
+  }
+  box.innerHTML = tpl.params.map(p => `
+    <div class="genie-field">
+      <label>${p.l}</label>
+      <input type="number" step="any" id="gp_${p.k}" value="${p.d}">
+    </div>
+  `).join('');
+}
+
+let lastGenieScript = '';
+let lastGenieFilename = 'backtest_generated.py';
+
+function generateGenieScript() {
+  const familyKey = document.getElementById('genieFamily').value;
+  const tpl = GENIE_TEMPLATES[familyKey];
+  const p = {};
+  tpl.params.forEach(param => { p[param.k] = document.getElementById('gp_' + param.k).value; });
+  const stopPct = document.getElementById('genieStop').value;
+  const targetPct = document.getElementById('genieTarget').value;
+
+  const indicatorCode = tpl.indicator(p);
+  const entryExpr = typeof tpl.entry === 'function' ? tpl.entry(p) : tpl.entry;
+  const exitExpr = tpl.exit;
+
+  const stopLine = stopPct ? `STOP_LOSS_PCT = ${stopPct} / 100` : `STOP_LOSS_PCT = None`;
+  const targetLine = targetPct ? `TARGET_PCT = ${targetPct} / 100` : `TARGET_PCT = None`;
+
+  const script = `# ============================================================
+# Genie-generated backtest: ${tpl.label}
+# Paste into Google Colab and run. Uses live Yahoo Finance data.
+# Generated from The Vault -- honest, runnable, no invented numbers.
+# ============================================================
+
+!pip install yfinance --quiet
+
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
+
+YEARS_BACK = 8
+${stopLine}
+${targetLine}
+
+NIFTY50_TICKERS = [
+    "ADANIENT.NS","ADANIPORTS.NS","APOLLOHOSP.NS","ASIANPAINT.NS","AXISBANK.NS",
+    "BAJAJ-AUTO.NS","BAJFINANCE.NS","BAJAJFINSV.NS","BPCL.NS","BHARTIARTL.NS",
+    "BRITANNIA.NS","CIPLA.NS","COALINDIA.NS","DIVISLAB.NS","DRREDDY.NS",
+    "EICHERMOT.NS","GRASIM.NS","HCLTECH.NS","HDFCBANK.NS","HDFCLIFE.NS",
+    "HEROMOTOCO.NS","HINDALCO.NS","HINDUNILVR.NS","ICICIBANK.NS","ITC.NS",
+    "INDUSINDBK.NS","INFY.NS","JSWSTEEL.NS","KOTAKBANK.NS","LT.NS",
+    "M&M.NS","MARUTI.NS","NTPC.NS","NESTLEIND.NS","ONGC.NS",
+    "POWERGRID.NS","RELIANCE.NS","SBILIFE.NS","SBIN.NS","SUNPHARMA.NS",
+    "TCS.NS","TATACONSUM.NS","TATASTEEL.NS","TECHM.NS",
+    "TITAN.NS","ULTRACEMCO.NS","UPL.NS","WIPRO.NS"
+]
+BENCHMARK_TICKER = "^NSEI"
+
+def compute_rsi(close, period=14):
+    delta = close.diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    avg_gain = gain.ewm(alpha=1/period, min_periods=period, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1/period, min_periods=period, adjust=False).mean()
+    rs = avg_gain / avg_loss
+    return 100 - (100 / (1 + rs))
+
+end_date = pd.Timestamp.today()
+start_date = end_date - pd.DateOffset(years=YEARS_BACK)
+print(f"Downloading {len(NIFTY50_TICKERS)} stocks + benchmark...")
+data = yf.download(NIFTY50_TICKERS, start=start_date, end=end_date, group_by='ticker', progress=True, threads=True)
+bench = yf.download(BENCHMARK_TICKER, start=start_date, end=end_date, progress=False)
+
+all_trades = []
+for ticker in NIFTY50_TICKERS:
+    try:
+        df = data[ticker].dropna(subset=["Close", "Volume"]).copy()
+    except Exception:
+        continue
+    if len(df) < 60:
+        continue
+
+${indicatorCode}
+    df["entry_signal"] = ${entryExpr}
+    df["exit_signal"] = ${exitExpr}
+
+    in_position = False
+    entry_price = None
+    entry_date = None
+    for i in range(1, len(df)):
+        row = df.iloc[i]
+        date = df.index[i]
+        if not in_position and row["entry_signal"]:
+            in_position = True
+            entry_price = row["Close"]
+            entry_date = date
+            continue
+        if in_position:
+            change = (row["Close"] / entry_price) - 1
+            hit_stop = STOP_LOSS_PCT is not None and change <= -STOP_LOSS_PCT
+            hit_target = TARGET_PCT is not None and change >= TARGET_PCT
+            if row["exit_signal"] or hit_stop or hit_target:
+                all_trades.append({
+                    "ticker": ticker, "entry_date": entry_date, "exit_date": date,
+                    "entry_price": entry_price, "exit_price": row["Close"],
+                    "return_pct": change * 100,
+                    "exit_reason": "stop" if hit_stop else ("target" if hit_target else "signal")
+                })
+                in_position = False
+
+trades_df = pd.DataFrame(all_trades).sort_values("entry_date").reset_index(drop=True)
+
+if len(trades_df) == 0:
+    print("No trades were generated -- try different parameters or check your internet connection.")
+else:
+    n_trades = len(trades_df)
+    win_rate = (trades_df["return_pct"] > 0).mean() * 100
+    equity = 100.0
+    curve = []
+    for r in trades_df["return_pct"]:
+        equity *= (1 + r / 100)
+        curve.append(equity)
+    trades_df["equity"] = curve
+    running_max = trades_df["equity"].cummax()
+    max_dd = ((trades_df["equity"] - running_max) / running_max * 100).min()
+    n_years = (trades_df["exit_date"].max() - trades_df["entry_date"].min()).days / 365.25
+    cagr = ((equity / 100) ** (1 / n_years) - 1) * 100 if n_years > 0 else float("nan")
+    rets = trades_df["return_pct"] / 100
+    sharpe = (rets.mean() / rets.std()) * np.sqrt(252) if rets.std() > 0 else float("nan")
+
+    bench_cagr = ((bench["Close"].iloc[-1] / bench["Close"].iloc[0]).item() ** (1 / ((bench.index[-1]-bench.index[0]).days/365.25)) - 1) * 100
+
+    print("=" * 60)
+    print("STRATEGY: ${tpl.label}  |  Universe: Nifty 50 (current list)")
+    print("=" * 60)
+    print(f"Trades generated:     {n_trades}")
+    print(f"Win rate:             {win_rate:.1f}%")
+    print(f"Cumulative return:    {equity - 100:.1f}%")
+    print(f"CAGR (strategy):      {cagr:.1f}%")
+    print(f"Max drawdown:         {max_dd:.1f}%")
+    print(f"Sharpe (approx):      {sharpe:.2f}")
+    print("-" * 60)
+    print(f"Nifty 50 buy & hold CAGR over same window: {bench_cagr:.1f}%")
+    print("=" * 60)
+    print("\\nCAVEATS:")
+    print("- Universe is the CURRENT Nifty 50 list applied to past prices (survivorship bias).")
+    print("- This is a DAILY end-of-day backtest. Any entry-window or intraday-specific")
+    print("  behavior from the original prompt template is NOT simulated -- that needs")
+    print("  real intraday historical data, which isn't reliably free for multi-year periods.")
+    print("- No transaction costs included -- add your own broker's costs before trusting this.")
+
+trades_df.to_csv("genie_backtest_trades.csv", index=False)
+print("\\nFull trade log saved to genie_backtest_trades.csv")
+`;
+
+  lastGenieScript = script;
+  lastGenieFilename = `genie_backtest_${familyKey}.py`;
+  document.getElementById('genieCode').textContent = script;
+  document.getElementById('genieOutput').style.display = 'block';
+
+  const caveatBox = document.getElementById('genieCaveat');
+  caveatBox.style.display = 'block';
+  caveatBox.textContent = 'This script tests daily end-of-day signals only. If your original strategy idea specified an intraday entry window or multiple same-day re-entries (like several BullsAI templates do), those details can\'t be honestly tested with free daily data -- the script above ignores them rather than faking a result.';
+}
+
+function copyGenieScript() {
+  navigator.clipboard.writeText(lastGenieScript);
+}
+function downloadGenieScript() {
+  const blob = new Blob([lastGenieScript], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = lastGenieFilename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+initGenieFamilySelect();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
