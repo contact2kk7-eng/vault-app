@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-04T12:17:31.684046+00:00",
+  "generated_at_utc": "2026-08-05T12:15:31.920275+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -10,12 +10,7 @@
     "breakdown_bearish": {
       "label": "Breakdown + Volume + RSI>30",
       "known_performance": "Not yet independently backtested by us -- mirror logic of the bullish version above, same underlying caveats likely apply.",
-      "hits": [
-        {
-          "ticker": "HDFCLIFE.NS",
-          "close": 535.95
-        }
-      ]
+      "hits": []
     }
   },
   "errors": [],
