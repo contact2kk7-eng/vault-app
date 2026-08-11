@@ -1,16 +1,11 @@
 {
-  "generated_at_utc": "2026-08-10T11:20:22.829498+00:00",
+  "generated_at_utc": "2026-08-11T11:04:05.325479+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
       "label": "Breakout + Volume + RSI<70",
       "known_performance": "Independently backtested: 5.2% CAGR, -53.5% max drawdown, underperformed Nifty 50 buy-and-hold (10.0% CAGR). Treat signals as informational, not a trading recommendation.",
-      "hits": [
-        {
-          "ticker": "GRASIM.NS",
-          "close": 3380.5
-        }
-      ]
+      "hits": []
     },
     "breakdown_bearish": {
       "label": "Breakdown + Volume + RSI>30",
