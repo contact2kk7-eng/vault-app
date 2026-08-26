@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-25T10:48:28.489258+00:00",
+  "generated_at_utc": "2026-08-26T10:50:30.850608+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,6 +13,11 @@
       "hits": []
     }
   },
-  "errors": [],
+  "errors": [
+    {
+      "ticker": "EICHERMOT.NS",
+      "error": "single positional indexer is out-of-bounds"
+    }
+  ],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
