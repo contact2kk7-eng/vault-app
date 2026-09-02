@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-01T14:51:56.260515+00:00",
+  "generated_at_utc": "2026-09-02T14:27:43.071067+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,11 +13,6 @@
       "hits": []
     }
   },
-  "errors": [
-    {
-      "ticker": "HINDALCO.NS",
-      "error": "single positional indexer is out-of-bounds"
-    }
-  ],
+  "errors": [],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
