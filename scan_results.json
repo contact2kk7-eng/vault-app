@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-28T18:09:31.207200+00:00",
+  "generated_at_utc": "2026-09-29T16:29:49.431922+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -10,7 +10,12 @@
     "breakdown_bearish": {
       "label": "Breakdown + Volume + RSI>30",
       "known_performance": "Not yet independently backtested by us -- mirror logic of the bullish version above, same underlying caveats likely apply.",
-      "hits": []
+      "hits": [
+        {
+          "ticker": "POWERGRID.NS",
+          "close": 261.5
+        }
+      ]
     }
   },
   "errors": [],
