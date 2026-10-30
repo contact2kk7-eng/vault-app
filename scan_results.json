@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-29T16:54:17.875302+00:00",
+  "generated_at_utc": "2026-10-30T16:41:06.400525+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -7,8 +7,8 @@
       "known_performance": "Independently backtested: 5.2% CAGR, -53.5% max drawdown, underperformed Nifty 50 buy-and-hold (10.0% CAGR). Treat signals as informational, not a trading recommendation.",
       "hits": [
         {
-          "ticker": "KOTAKBANK.NS",
-          "close": 459.0
+          "ticker": "DIVISLAB.NS",
+          "close": 9780.0
         }
       ]
     },
