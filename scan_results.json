@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-03T17:49:13.487220+00:00",
+  "generated_at_utc": "2026-11-04T17:58:31.471240+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,6 +13,11 @@
       "hits": []
     }
   },
-  "errors": [],
+  "errors": [
+    {
+      "ticker": "TITAN.NS",
+      "error": "single positional indexer is out-of-bounds"
+    }
+  ],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
