@@ -1,16 +1,11 @@
 {
-  "generated_at_utc": "2026-11-05T17:59:41.616181+00:00",
+  "generated_at_utc": "2026-11-06T17:28:11.264664+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
       "label": "Breakout + Volume + RSI<70",
       "known_performance": "Independently backtested: 5.2% CAGR, -53.5% max drawdown, underperformed Nifty 50 buy-and-hold (10.0% CAGR). Treat signals as informational, not a trading recommendation.",
-      "hits": [
-        {
-          "ticker": "JSWSTEEL.NS",
-          "close": 1355.6
-        }
-      ]
+      "hits": []
     },
     "breakdown_bearish": {
       "label": "Breakdown + Volume + RSI>30",
