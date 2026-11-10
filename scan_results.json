@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-09T20:41:58.876944+00:00",
+  "generated_at_utc": "2026-11-10T17:46:26.695643+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,11 +13,6 @@
       "hits": []
     }
   },
-  "errors": [
-    {
-      "ticker": "DIVISLAB.NS",
-      "error": "single positional indexer is out-of-bounds"
-    }
-  ],
+  "errors": [],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
