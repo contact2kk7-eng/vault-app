@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-11T17:52:26.760782+00:00",
+  "generated_at_utc": "2026-11-12T18:15:37.251726+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,11 +13,6 @@
       "hits": []
     }
   },
-  "errors": [
-    {
-      "ticker": "HDFCLIFE.NS",
-      "error": "single positional indexer is out-of-bounds"
-    }
-  ],
+  "errors": [],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
