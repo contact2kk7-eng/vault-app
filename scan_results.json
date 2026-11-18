@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-17T19:09:47.302966+00:00",
+  "generated_at_utc": "2026-11-18T18:49:53.663617+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,6 +13,11 @@
       "hits": []
     }
   },
-  "errors": [],
+  "errors": [
+    {
+      "ticker": "ADANIENT.NS",
+      "error": "single positional indexer is out-of-bounds"
+    }
+  ],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
