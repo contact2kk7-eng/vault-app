@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-19T18:58:31.854660+00:00",
+  "generated_at_utc": "2026-11-20T18:35:26.501228+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -13,11 +13,6 @@
       "hits": []
     }
   },
-  "errors": [
-    {
-      "ticker": "ITC.NS",
-      "error": "single positional indexer is out-of-bounds"
-    }
-  ],
+  "errors": [],
   "data_source": "yfinance (Yahoo Finance) -- free, delayed EOD data, not a licensed real-time feed"
 }
