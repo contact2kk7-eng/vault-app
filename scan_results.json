@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-25T19:55:08.565584+00:00",
+  "generated_at_utc": "2026-11-26T19:35:57.826659+00:00",
   "universe": "Nifty 50 (current constituent list)",
   "strategies": {
     "breakout_bullish": {
@@ -10,12 +10,7 @@
     "breakdown_bearish": {
       "label": "Breakdown + Volume + RSI>30",
       "known_performance": "Not yet independently backtested by us -- mirror logic of the bullish version above, same underlying caveats likely apply.",
-      "hits": [
-        {
-          "ticker": "TATASTEEL.NS",
-          "close": 163.0
-        }
-      ]
+      "hits": []
     }
   },
   "errors": [],
